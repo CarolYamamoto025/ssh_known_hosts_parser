@@ -35,3 +35,10 @@ The trade-off: markers are stripped rather than surfaced. If you need to disting
 Hashed hostnames are stored verbatim in `entry.hostnames` (the literal `|1|<salt>|<hash>` string). There is no way to recover the original hostname — that is the point of hashing. Use `entry.matches("candidate.example.com")` to test a specific host against a hashed entry; it recomputes the HMAC and compares in constant time.
 
 Plain hostname fields support comma-separated patterns with `*` and `?` globs and `!`-prefixed negations. Bracket character classes (`[abc]`) are intentionally not implemented, matching OpenSSH's own treatment of them as literal characters in known_hosts patterns.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
